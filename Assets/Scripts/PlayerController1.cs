@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Stateless;
 
 namespace CharecterControllerBased
 {
@@ -19,8 +18,16 @@ namespace CharecterControllerBased
 
     }
 
+    public enum Trigger
+    {
+        StartedWalking,
+        StoppedWalking
+    }
+
     public class PlayerController1 : MonoBehaviour
     {
+        private StateMachine<IState, Trigger> stateMachine;    
+
         #region Properties
         [Header("Movement Properties")]
         public playerState activeState;
