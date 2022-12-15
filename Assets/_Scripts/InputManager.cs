@@ -2,106 +2,116 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : MonoBehaviour
+namespace com.Arnab.ZombieAppocalypseShooter
 {
-    public static event Action<Vector2> movePressed;
-    public static event Action<double> shootPressed;
-    public static event Action<float> pitchChanged;
-    public static event Action<float> rollChanged;
-    public static event Action<float> yawChanged;
-    public static event Action jumpPressed;
-    public static event Action crouchPressed;
-    public static event Action aimPressed;
-    public static event Action toggleSprint;
-    public static event Action toggleFlight;
-
-    public void Move(InputAction.CallbackContext context)
+    public class InputManager : MonoBehaviour
     {
-        var moveDir = context.ReadValue<Vector2>();
-        movePressed?.Invoke(moveDir);
-        
-    }
+        public static Vector2 moveDir { get; private set; }
+        public static float pitch { get; private set; }
+        public static float yaw { get; private set; }
+        public static float roll { get; private set; }
+        public static event Action movePressed;
+        public static event Action shootPressed;
+        public static event Action pitchChanged;
+        public static event Action rollChanged;
+        public static event Action yawChanged;
+        public static event Action jumpPressed;
+        public static event Action crouchPressed;
+        public static event Action aimPressed;
+        public static event Action toggleSprint;
+        public static event Action toggleFlight;
 
-    public void Jump(InputAction.CallbackContext context)
-    {
-        if(context.performed)
+        public void Move(InputAction.CallbackContext context)
         {
-            jumpPressed?.Invoke();
-        }
-    }
+            var moveDir = context.ReadValue<Vector2>();
+            movePressed?.Invoke();
 
-    public void Run(InputAction.CallbackContext context)
-    {
-        if (context.started)
-        {
-            toggleSprint?.Invoke();
         }
-        if (context.canceled)
-        {
-            toggleSprint?.Invoke();
-        }
-    }
 
-    public void ToggleFlying(InputAction.CallbackContext context)
-    {
-        if (context.performed)
+        public void Jump(InputAction.CallbackContext context)
         {
-            toggleFlight?.Invoke();
+            if (context.performed)
+            {
+                jumpPressed?.Invoke();
+            }
         }
-    }
 
-    public void Crouch(InputAction.CallbackContext context)
-    {
-        if (context.started)
+        public void Run(InputAction.CallbackContext context)
         {
-            crouchPressed?.Invoke();
+            if (context.started)
+            {
+                toggleSprint?.Invoke();
+            }
+            if (context.canceled)
+            {
+                toggleSprint?.Invoke();
+            }
         }
-        if (context.canceled)
+
+        public void ToggleFlying(InputAction.CallbackContext context)
         {
-            crouchPressed?.Invoke();
+            if (context.performed)
+            {
+                toggleFlight?.Invoke();
+            }
         }
-    }
 
-    public void Aim(InputAction.CallbackContext context)
-    {
-        if(context.performed)
+        public void Crouch(InputAction.CallbackContext context)
         {
-            aimPressed?.Invoke();
+            if (context.started)
+            {
+                crouchPressed?.Invoke();
+            }
+            if (context.canceled)
+            {
+                crouchPressed?.Invoke();
+            }
         }
-        if(context.canceled)
+
+        public void Aim(InputAction.CallbackContext context)
         {
-            aimPressed?.Invoke();
+            if (context.performed)
+            {
+                aimPressed?.Invoke();
+            }
+            if (context.canceled)
+            {
+                aimPressed?.Invoke();
+            }
         }
-    }
 
-    public void Shoot(InputAction.CallbackContext context)
-    {
-        if(context.performed)
+        public void Shoot(InputAction.CallbackContext context)
         {
-            shootPressed?.Invoke(context.duration);
+            if (context.performed)
+            {
+                shootPressed?.Invoke();
+            }
+            if (context.canceled)
+            {
+                shootPressed?.Invoke();
+            }
         }
-        if(context.canceled)
+
+        public void ControlPitch(InputAction.CallbackContext context)
         {
-            shootPressed?.Invoke(0);
+            pitch = context.ReadValue<float>();
+            if (context.performed)
+                pitchChanged?.Invoke();
         }
-    }
 
-    public void ControlPitch(InputAction.CallbackContext context)
-    {
-        var pitch = context.ReadValue<float>();
-        pitchChanged?.Invoke(pitch);
-    }
-
-    public void ControlRoll(InputAction.CallbackContext context)
-    {
-        var roll = context.ReadValue<float>();
-        rollChanged?.Invoke(roll);
-    }
-    public void ControlYaw(InputAction.CallbackContext context)
-    {
-        var yaw = context.ReadValue<float>();
-        yawChanged?.Invoke(yaw);
-    }
+        public void ControlRoll(InputAction.CallbackContext context)
+        {
+            roll = context.ReadValue<float>();
+            if (context.performed)
+                rollChanged?.Invoke();
+        }
+        public void ControlYaw(InputAction.CallbackContext context)
+        {
+            yaw = context.ReadValue<float>();
+            if (context.performed)
+                yawChanged?.Invoke();
+        }
 
 
+    } 
 }

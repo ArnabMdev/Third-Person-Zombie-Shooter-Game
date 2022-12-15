@@ -4,19 +4,23 @@ using UnityEngine;
 
 namespace com.Arnab.ZombieAppocalypseShooter
 {
-    public class StrafingState : IState
+    public class StrafingState : WalkingState
     {
-        public void Entry()
+        public StrafingState(PlayerController1 playerController1) : base(playerController1)
         {
-
+            
         }
-        public void UpdateLogic()
+        public override void Entry()
         {
-
+            playerController.StartAnimation(Animations.StrafingFront);
         }
-        public void Exit()
+        public override void UpdateLogic()
         {
-
+            base.UpdateLogic();
+        }
+        public override void Exit()
+        {
+            base.Exit();
         }
     } 
 }

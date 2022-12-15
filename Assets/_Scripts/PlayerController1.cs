@@ -21,7 +21,8 @@ namespace com.Arnab.ZombieAppocalypseShooter
         StrafingRight,
         StrafingBack,
         Running,
-        RunningGuarding,
+        Walking,
+        Crouching
 
     }
     public enum playerState
@@ -37,15 +38,40 @@ namespace com.Arnab.ZombieAppocalypseShooter
     public enum Trigger
     {
         StartedWalking,
-        StoppedWalking
+        StoppedWalking,
+        StartedGuarding,
+        StoppedGuarding,
+        StartedAiming,
+        StoppedAiming,
+        StartedRunning,
+        StoppedRunning,
+        StartedJumping,
+        StoppedJumping,
+        StartedShooting,
+        StoppedShooting,
+        StartedReloading,
+        StoppedReloading,
+        StartedDying,
+        StoppedDying
+
     }
 
     public class PlayerController1 : MonoBehaviour
     {
         #region StateMachineProperties
         private StateMachine<IState, Trigger> stateMachine;
-        private IState IdleState;
+        private IdleState idleState, idleGuardingState, idleAimingState, idleShootingState;
+        private WalkingState walkingState, strafingState;
+        private RunningState runningState;
+        private CrouchingState crouchingState;
+        private JumpingState jumpingState;
+        private ReloadingState reloadingState;
+        private DyingState dyingState;
+        
+
+        
         #endregion
+
         #region Properties
         [Header("Movement Properties")]
         public playerState activeState;
@@ -92,9 +118,18 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         private void Awake()
         {
+            idleState = new IdleState(this);
+            idleGuardingState = new IdleGuardingState(this);
+            idleShootingState = new IdleShootingState(this);
+            idleAimingState = new IdleAimingState(this);
+            walkingState = new WalkingState(this);
+            strafingState = new StrafingState(this);
+            runningState = new RunningState(this);
+            crouchingState = new CrouchingState(this);
+            reloadingState = new ReloadingState(this);
+            dyingState = new DyingState(this);
+            InitializeStateMachine();
             
-            //IdleState = new IdleState();
-            //stateMachine = new StateMachine<IState, Trigger>();
         }
         void Start()
         {
@@ -107,37 +142,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         private void FixedUpdate()
         {
-            /*if (activeState == playerState.Jumping && characterController.isGrounded)
-            {
-                ResetGravity();
-                activeState = playerState.Walking;
-            }
-            switch (activeState)
-            {
-                case playerState.Idle:
-                    TurnPlayer(moveDir);
-                    ApplyGravity();
-                    break;
-                case playerState.Walking:
-                    TurnPlayer(moveDir);
-                    MovePlayer();
-                    ApplyGravity();
-                    break;
-                case playerState.Sprinting:
-                    TurnPlayer(moveDir);
-                    MovePlayer();
-                    ApplyGravity();
-                    break;
-                case playerState.Jumping:
-                    TurnPlayer(moveDir);
-                    ApplyGravity();
-                    break;
-                case playerState.Flying:
-                    ControlFlight();
-                    break;
-                default:
-                    break;
-            }*/
+            stateMachine.State.UpdateLogic();
 
         }
         #endregion
@@ -191,7 +196,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
                     animator.SetBool("isRunning", false);
                     animator.SetBool("isGuarding", false);
                     break;
-                case Animations.RunningGuarding:
+                case Animations.Walking:
                     animator.SetBool("isRunning", false);
                     animator.SetBool("isGuarding", false);
                     break;
@@ -250,9 +255,12 @@ namespace com.Arnab.ZombieAppocalypseShooter
                     animator.SetBool("isRunning", true);
                     animator.SetBool("isGuarding", false);
                     break;
-                case Animations.RunningGuarding:
+                case Animations.Walking:
                     animator.SetBool("isRunning", true);
                     animator.SetBool("isGuarding", true);
+                    break;
+                case Animations.Crouching:
+                    animator.SetBool("isCrouching", true);
                     break;
                 default:
                     break;
@@ -264,8 +272,9 @@ namespace com.Arnab.ZombieAppocalypseShooter
             characterController.Move(movementVector * Time.fixedDeltaTime);
         }
 
-        private void MovePlayer(Vector2 moveDir)
+        public void MovePlayer()
         {
+            var moveDir = InputManager.moveDir;
             float _walkTrigger = Mathf.Sqrt(Mathf.Pow(moveDir.x, 2) + Mathf.Pow(moveDir.y, 2));
             if (_walkTrigger > turningValueOffset)
             {
@@ -276,10 +285,10 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         }
 
-        private void TurnPlayer(Vector2 inputVector)
+        public void TurnPlayer()
         {
+            var inputVector = InputManager.moveDir;
             Vector3 direction = new Vector3(inputVector.x, 0, inputVector.y); ;
-
             if (inputVector.magnitude >= 0.1f)
             {
                 float targetAngle = MathF.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
@@ -311,6 +320,56 @@ namespace com.Arnab.ZombieAppocalypseShooter
             {
                 movementVector.y = 0;
             }
+        }
+
+        private void InitializeStateMachine()
+        {
+            stateMachine = new StateMachine<IState, Trigger>(idleState);
+
+            stateMachine
+                .Configure(idleState)
+                .OnEntry(() => idleState.Entry())
+                .OnExit(() => idleState.Exit())
+                .Permit(Trigger.StartedGuarding, idleGuardingState)
+                .Permit(Trigger.StartedAiming, idleAimingState)
+                .Permit(Trigger.StartedWalking, walkingState)
+                .Permit(Trigger.StartedRunning, runningState)
+                .Permit(Trigger.StartedReloading, reloadingState)
+                .PermitIf(Trigger.StartedJumping, jumpingState, () => characterController.isGrounded)
+                .Permit(Trigger.StartedDying, dyingState);
+
+            stateMachine
+                .Configure(idleGuardingState)
+                .OnEntry(() => idleGuardingState.Entry())
+                .OnExit(() => idleGuardingState.Exit())
+                .SubstateOf(idleState)
+                .Permit(Trigger.StartedGuarding, idleState)
+                .Permit(Trigger.StartedRunning, runningState)
+                .Permit(Trigger.StartedReloading, reloadingState)
+                .Permit(Trigger.StartedWalking, walkingState)
+                .PermitIf(Trigger.StartedJumping, jumpingState, () => characterController.isGrounded)
+                .Permit(Trigger.StartedDying, dyingState);
+
+            stateMachine
+                .Configure(idleAimingState)
+                .OnEntry(() => idleAimingState.Entry())
+                .OnExit(() => idleAimingState.Exit())
+                .SubstateOf(idleState)
+                .Permit(Trigger.StoppedAiming, idleState)
+                .Permit(Trigger.StartedWalking, strafingState)
+                .Permit(Trigger.StartedRunning, runningState)
+                .PermitIf(Trigger.StartedJumping, jumpingState,() => characterController.isGrounded)
+                .Permit(Trigger.StartedReloading, reloadingState)
+                .Permit(Trigger.StartedDying, dyingState);
+
+            stateMachine
+                .Configure(idleShootingState)
+                .OnEntry(() => idleShootingState.Entry())
+                .OnExit(() => idleShootingState.Exit())
+                .Permit(Trigger.StoppedShooting, idleAimingState);
+
+           
+
         }
 
         #endregion

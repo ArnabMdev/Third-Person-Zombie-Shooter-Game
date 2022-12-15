@@ -6,6 +6,10 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class IdleAimingState : IdleState
     {
+        public IdleAimingState(PlayerController1 playerController) : base(playerController)
+        {
+
+        }
         public void Entry()
         {
             base.Entry();
