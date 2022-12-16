@@ -4,23 +4,26 @@ using UnityEngine;
 
 namespace com.Arnab.ZombieAppocalypseShooter
 {
-    public class IdleAimingState : IdleState
+    public class IdleGuardingState : IdleState
     {
-        public IdleAimingState(PlayerController1 playerController) : base(playerController)
+        public IdleGuardingState(PlayerStateMachine playerSM) : base(playerSM)
         {
 
         }
         public override void Entry()
         {
             base.Entry();
+            playerController.animator.SetBool("isGuarding", true);
         }
         public override void UpdateLogic()
         {
-            base.UpdateLogic();
+            
         }
         public override void Exit()
         {
+            playerController.animator.SetBool("isGuarding", false);
             base.Exit();
         }
+
     } 
 }

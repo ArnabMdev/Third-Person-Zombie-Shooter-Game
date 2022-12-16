@@ -12,6 +12,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         public static float roll { get; private set; }
         public static event Action movePressed;
         public static event Action shootPressed;
+        public static event Action reloadPressed;
         public static event Action pitchChanged;
         public static event Action rollChanged;
         public static event Action yawChanged;
@@ -33,6 +34,14 @@ namespace com.Arnab.ZombieAppocalypseShooter
             if (context.performed)
             {
                 jumpPressed?.Invoke();
+            }
+        }
+
+        public void Reload(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                reloadPressed?.Invoke();
             }
         }
 

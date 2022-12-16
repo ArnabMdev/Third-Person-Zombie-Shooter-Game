@@ -4,12 +4,13 @@ using UnityEngine;
 
 namespace com.Arnab.ZombieAppocalypseShooter
 {
-    public class IdleGuardingState : IdleState
-    {
-        public IdleGuardingState(PlayerController1 playerController) : base(playerController)
+	public class CrouchWalkingState : CrouchingState
+	{
+        public CrouchWalkingState(PlayerStateMachine playerSM) : base(playerSM)
         {
 
         }
+
         public override void Entry()
         {
             base.Entry();
@@ -22,6 +23,5 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             base.Exit();
         }
-
     } 
 }

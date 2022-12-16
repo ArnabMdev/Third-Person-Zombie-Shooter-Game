@@ -6,14 +6,16 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class WalkingState : IState
     {
+        protected PlayerStateMachine playerSM;
         protected PlayerController1 playerController;
-        public WalkingState(PlayerController1 playerController)
+        public WalkingState(PlayerStateMachine playerSM)
         {
-            this.playerController = playerController;
+            this.playerSM = playerSM;
+            this.playerController = playerSM.playerController;
         }
         public virtual void Entry()
         {
-            playerController.StartAnimation(Animations.Walking);
+            playerController.animator.SetBool("isWalking", true);
         }
         public virtual void UpdateLogic()
         {
@@ -22,7 +24,8 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public virtual void Exit()
         {
-            playerController.StopAnimation(Animations.Walking);
+            playerController.animator.SetBool("isWalking", false);
+
         }
     } 
 }

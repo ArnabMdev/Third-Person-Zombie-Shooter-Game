@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace com.Arnab.ZombieAppocalypseShooter
 {
-	public class CrouchWalkingState : CrouchingState
-	{
-        public CrouchWalkingState(PlayerController1 playerController) : base(playerController)
+    public class StrafingState : WalkingState
+    {
+        public StrafingState(PlayerStateMachine playerSM) : base(playerSM)
         {
-
+            
         }
-
         public override void Entry()
         {
             base.Entry();
+            playerController.animator.SetInteger("isStrafingInDirection", 1);
         }
         public override void UpdateLogic()
         {
@@ -21,6 +21,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void Exit()
         {
+            playerController.animator.SetInteger("isStrafingInDirection", 0);
             base.Exit();
         }
     } 

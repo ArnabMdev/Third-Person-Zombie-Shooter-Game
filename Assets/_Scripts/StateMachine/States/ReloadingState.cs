@@ -4,26 +4,26 @@ using UnityEngine;
 
 namespace com.Arnab.ZombieAppocalypseShooter
 {
-    public class RunningState : IState
+    public class ReloadingState : IState
     {
+        protected PlayerStateMachine playerSM;
         protected PlayerController1 playerController;
-        public RunningState(PlayerController1 playerController)
+        public ReloadingState(PlayerStateMachine playerSM)
         {
-            this.playerController = playerController;
+            this.playerSM = playerSM;
+            this.playerController = playerSM.playerController;
         }
         public void Entry()
         {
-            playerController.StartAnimation(Animations.Running);
+            playerController.animator.SetTrigger("Reload");
         }
         public void UpdateLogic()
         {
 
         }
-
         public void Exit()
         {
-            playerController.StopAnimation(Animations.Running);
-        }
 
+        }
     } 
 }
