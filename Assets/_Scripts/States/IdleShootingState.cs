@@ -10,15 +10,15 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
 
         }
-        public void Entry()
+        public override void Entry()
         {
             base.Entry();
         }
-        public void UpdateLogic()
+        public override void UpdateLogic()
         {
             base.UpdateLogic();
         }
-        public void Exit()
+        public override void Exit()
         {
             base.Exit();
         }

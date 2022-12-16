@@ -12,15 +12,15 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             this.playerController = playerController;
         }
-        public void Entry()
+        public virtual void Entry()
         {
             playerController.StartAnimation(Animations.Idle);
         }
-        public void UpdateLogic()
+        public virtual void UpdateLogic()
         {
 
         }
-        public void Exit()
+        public virtual void Exit()
         {
             playerController.StopAnimation(Animations.Idle);
 
