@@ -175,7 +175,7 @@
                 {
                     "name": "",
                     "id": "2afa98a6-578a-4cd6-b839-3fc205313887",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -219,7 +219,7 @@
                 {
                     "name": "",
                     "id": "7193995c-e0d5-403d-87ff-c2b5c9373a9c",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

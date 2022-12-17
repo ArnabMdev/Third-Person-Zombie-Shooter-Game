@@ -13,15 +13,34 @@ namespace com.Arnab.ZombieAppocalypseShooter
         public override void Entry()
         {
             base.Entry();
+            playerController.animator.SetBool("isRunning", true);
         }
         public override void UpdateLogic()
         {
-            base.UpdateLogic();
+            if(InputManager.isAiming)
+            {
+                base.PlayerStartedAiming();
+            }
+            if(!InputManager.isRunning)
+            {
+                PlayerStoppedMoving();
+            }
+            if(InputManager.moveDir == Vector2.zero)
+            {
+                base.PlayerStoppedMoving();
+            }
+            playerController.ApplyGravity();
+            playerController.MovePlayer(InputManager.moveDir, 2);
         }
         public override void Exit()
         {
+            playerController.animator.SetBool("isRunning", false);
             base.Exit();
         }
 
+        private void PlayerStoppedRunning()
+        {
+            playerSM.stateMachine.Fire(Trigger.StoppedRunning);
+        }
     } 
 }

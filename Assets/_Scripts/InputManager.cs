@@ -10,22 +10,20 @@ namespace com.Arnab.ZombieAppocalypseShooter
         public static float pitch { get; private set; }
         public static float yaw { get; private set; }
         public static float roll { get; private set; }
-        public static event Action movePressed;
-        public static event Action shootPressed;
+        public static bool isAiming { get; private set; }
+        public static bool isShooting { get; private set; }
+        public static bool isRunning { get; private set; }
         public static event Action reloadPressed;
         public static event Action pitchChanged;
         public static event Action rollChanged;
         public static event Action yawChanged;
         public static event Action jumpPressed;
         public static event Action crouchPressed;
-        public static event Action aimPressed;
-        public static event Action toggleSprint;
-        public static event Action toggleFlight;
+        public static event Action flyPressed;
 
         public void Move(InputAction.CallbackContext context)
         {
-            var moveDir = context.ReadValue<Vector2>();
-            movePressed?.Invoke();
+            moveDir = context.ReadValue<Vector2>();
 
         }
 
@@ -47,31 +45,29 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         public void Run(InputAction.CallbackContext context)
         {
-            if (context.started)
+            if (context.performed)
             {
-                toggleSprint?.Invoke();
+                isRunning = true;
             }
             if (context.canceled)
             {
-                toggleSprint?.Invoke();
+                isRunning = false;
+
             }
+
         }
 
         public void ToggleFlying(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
-                toggleFlight?.Invoke();
+                flyPressed?.Invoke();
             }
         }
 
         public void Crouch(InputAction.CallbackContext context)
         {
-            if (context.started)
-            {
-                crouchPressed?.Invoke();
-            }
-            if (context.canceled)
+            if (context.performed)
             {
                 crouchPressed?.Invoke();
             }
@@ -81,11 +77,11 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                aimPressed?.Invoke();
+                isAiming = true;
             }
             if (context.canceled)
             {
-                aimPressed?.Invoke();
+                isAiming = false;
             }
         }
 
@@ -93,11 +89,11 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                shootPressed?.Invoke();
+                isShooting = true;
             }
             if (context.canceled)
             {
-                shootPressed?.Invoke();
+                isShooting = false;
             }
         }
 

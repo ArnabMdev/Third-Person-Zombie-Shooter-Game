@@ -9,7 +9,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
     {
         protected PlayerStateMachine playerSM;
         protected PlayerController1 playerController;
-        private float idleTime;
+        private float idleTime = 0;
 
         public IdleState(PlayerStateMachine playerSM)
         {
@@ -18,27 +18,41 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public virtual void Entry()
         {
+            Debug.Log("This Happened");
             playerController.animator.SetBool("isIdle", true);
-            idleTime = Time.time;   
-            InputManager.movePressed += PlayerMoved;
             InputManager.jumpPressed += PlayerJumped;
-            InputManager.aimPressed += PlayerAimed;
             InputManager.crouchPressed += PlayerCrouched;
             InputManager.reloadPressed += PlayerReloaded;
         }
         public virtual void UpdateLogic()
         {
-            if(Mathf.Abs(Time.time - idleTime) > 10f)
+            playerController.ApplyGravity();
+            CheckGuarding();
+            if(InputManager.isAiming)
             {
+                PlayerAimed();
+            }
+            if(InputManager.moveDir != Vector2.zero)
+            {
+                PlayerMoved();
+            }
+        }
+
+        private void CheckGuarding()
+        {
+            idleTime += Time.fixedDeltaTime;
+            if (idleTime > 10f)
+            {
+                idleTime = 0;
                 PlayerGuarded();
             }
         }
+
         public virtual void Exit()
         {
-            InputManager.movePressed -= PlayerMoved;
             InputManager.jumpPressed -= PlayerJumped;
-            InputManager.aimPressed -= PlayerAimed;
             InputManager.crouchPressed -= PlayerCrouched;
+            InputManager.reloadPressed -= PlayerReloaded;
             playerController.animator.SetBool("isIdle", false);
 
         }
@@ -76,5 +90,6 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             playerSM.stateMachine.Fire(Trigger.StartedDying);
         }
+
     } 
 }

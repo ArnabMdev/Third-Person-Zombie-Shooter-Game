@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace com.Arnab.ZombieAppocalypseShooter
 {
-    public class IdleShootingState : IdleAimingState
+    public class IdleShootingState : IdleState
     {
         public IdleShootingState(PlayerStateMachine playerSM) : base(playerSM)
         {
@@ -12,7 +12,8 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void Entry()
         {
-            base.Entry();
+            playerController.animator.SetBool("isIdle", true);
+            playerController.animator.SetBool("isAiming", true);
             switch (playerController.gunMode)
             {
                 case GunMode.Single:
@@ -27,15 +28,18 @@ namespace com.Arnab.ZombieAppocalypseShooter
                 default:
                     break;
             }
+
         }
         public override void UpdateLogic()
         {
-            base.UpdateLogic();
+            if(!InputManager.isShooting)
+            {
+                PlayerStoppedShooting();
+            }
         }
         public override void Exit()
         {
             playerController.animator.SetInteger("isShootingBullets", 0);
-            base.Exit();
         }
 
         private void PlayerStoppedShooting()

@@ -33,16 +33,16 @@ namespace com.Arnab.ZombieAppocalypseShooter
     {
         #region Properties
         [Header("Movement Properties")]
-        public playerState activeState;
         [SerializeField] private float jumpHeight;
         [SerializeField] private float moveSpeed;
+        [SerializeField] private float strafeSpeed;
         [SerializeField] private float lookSpeed;
         [SerializeField] private float gravityValue = -9.81f;
         [SerializeField] private bool isFlying;
         [SerializeField] private float turnSmoothTime = 0.1f;
         [SerializeField] float turningValueOffset;
         public bool isGrounded => characterController.isGrounded;
-        public Animator animator;
+        [HideInInspector] public Animator animator;
         private float turnSmoothVelocity;
         private Vector3 movementVector;
 
@@ -51,7 +51,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         [SerializeField] private GameObject gun;
         [SerializeField] private Texture2D xHairImage;
         [SerializeField] private Vector2 xHairOffset;
-        public GunMode gunMode = GunMode.Single;
+        public GunMode gunMode = GunMode.Auto;
 
 
         [Header("Flight Properties")]
@@ -89,15 +89,16 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             characterController = GetComponent<CharacterController>();
             animator = GetComponent<Animator>();
-            activeState = playerState.Idle;
             moveVector = Vector3.zero;
             movementVector = Vector3.zero;
+            playerSM.stateMachine.Fire(Trigger.StartedGame);
+            //playerSM.stateMachine.State.Entry();
+
         }
 
         private void FixedUpdate()
         {
             playerSM.stateMachine.State.UpdateLogic();
-            
 
         }
         #endregion
@@ -110,22 +111,48 @@ namespace com.Arnab.ZombieAppocalypseShooter
             characterController.Move(movementVector * Time.fixedDeltaTime);
         }
 
-        public void MovePlayer()
+        public void StrafePlayer(Vector2 moveDir)
         {
-            var moveDir = InputManager.moveDir;
+            var strafeVector = Vector3.zero;
+            if(moveDir.x == 1)
+            {
+                animator.SetInteger("isStrafingInDirection", 2);
+                strafeVector = transform.right * strafeSpeed;
+            }
+            else if(moveDir.x == -1)
+            {
+                animator.SetInteger("isStrafingInDirection", 3);
+                strafeVector = -1 * transform.right * strafeSpeed;
+            }
+            else if(moveDir.y == 1)
+            {
+                animator.SetInteger("isStrafingInDirection", 1);
+                strafeVector = transform.forward * strafeSpeed;
+            }
+            else if(moveDir.y == -1)
+            {
+                animator.SetInteger("isStrafingInDirection", 4);
+                strafeVector = -1 * transform.forward * strafeSpeed;
+            }
+            Debug.Log(strafeVector);
+            characterController.Move(strafeVector);
+        }
+
+        public void MovePlayer(Vector2 moveDir, int speedMultiplier)
+        {
+            TurnPlayer(moveDir);
             float _walkTrigger = Mathf.Sqrt(Mathf.Pow(moveDir.x, 2) + Mathf.Pow(moveDir.y, 2));
             if (_walkTrigger > turningValueOffset)
             {
                 movementVector = new Vector3(moveVector.x * moveSpeed * Time.fixedDeltaTime, 0, moveVector.z * moveSpeed * Time.fixedDeltaTime);
-                characterController.Move(movementVector * Time.fixedDeltaTime); 
+                characterController.Move(movementVector * speedMultiplier * Time.fixedDeltaTime); 
 
             }
 
         }
 
-        public void TurnPlayer()
+        private void TurnPlayer(Vector2 inputVector)
         {
-            var inputVector = InputManager.moveDir;
             Vector3 direction = new Vector3(inputVector.x, 0, inputVector.y); ;
             if (inputVector.magnitude >= 0.1f)
             {
@@ -135,6 +162,8 @@ namespace com.Arnab.ZombieAppocalypseShooter
                 moveVector = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
             }
         }
+
+
 
         private void ControlFlight()
         {

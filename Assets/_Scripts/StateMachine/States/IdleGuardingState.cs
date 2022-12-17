@@ -8,7 +8,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
     {
         public IdleGuardingState(PlayerStateMachine playerSM) : base(playerSM)
         {
-
+            
         }
         public override void Entry()
         {
@@ -17,13 +17,20 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void UpdateLogic()
         {
-            
+            playerController.ApplyGravity();
+            if (InputManager.isAiming)
+            {
+                PlayerAimed();
+            }
+            if (InputManager.moveDir != Vector2.zero)
+            {
+                PlayerMoved();
+            }
         }
         public override void Exit()
         {
             playerController.animator.SetBool("isGuarding", false);
             base.Exit();
         }
-
     } 
 }

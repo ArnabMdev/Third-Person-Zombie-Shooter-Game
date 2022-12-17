@@ -8,6 +8,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public enum Trigger
     {
+        StartedGame,
         StartedWalking,
         StoppedWalking,
         StartedGuarding,
@@ -33,7 +34,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         public StateMachine<IState, Trigger> stateMachine;
         public PlayerController1 playerController;
         private IState previousState;
-        private IdleState idleState, idleGuardingState, idleAimingState, idleShootingState;
+        private IdleState initialState, idleState, idleGuardingState, idleAimingState, idleShootingState;
         private WalkingState walkingState, strafingState, runningState;
         private CrouchingState crouchingState, crouchWalkingState;
         private JumpingState jumpingState;
@@ -46,6 +47,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public void InitializeStates()
         {
+            initialState = new IdleState(this);
             idleState = new IdleState(this);
             idleGuardingState = new IdleGuardingState(this);
             idleAimingState = new IdleAimingState(this);
@@ -61,7 +63,11 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public void InitializeStateMachine()
         {
-            stateMachine = new StateMachine<IState, Trigger>(idleState);
+            stateMachine = new StateMachine<IState, Trigger>(initialState);
+
+            stateMachine
+                .Configure(initialState)
+                .Permit(Trigger.StartedGame, idleState);
 
             stateMachine
                 .Configure(idleState)
@@ -83,6 +89,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
                 .SubstateOf(idleState)
                 .Permit(Trigger.StartedGuarding, idleState)
                 .Permit(Trigger.StartedRunning, runningState)
+                .Permit(Trigger.StartedAiming, idleAimingState)
                 .Permit(Trigger.StartedReloading, reloadingState)
                 .Permit(Trigger.StartedWalking, walkingState)
                 .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
@@ -95,6 +102,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
                 .OnExit(() => idleAimingState.Exit())
                 .SubstateOf(idleState)
                 .Permit(Trigger.StoppedAiming, idleState)
+                .Permit(Trigger.StartedShooting, idleShootingState)
                 .Permit(Trigger.StartedWalking, strafingState)
                 .Permit(Trigger.StartedRunning, runningState)
                 .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
@@ -106,6 +114,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
                 .Configure(idleShootingState)
                 .OnEntry(() => idleShootingState.Entry())
                 .OnExit(() => idleShootingState.Exit())
+                .SubstateOf(idleState)
                 .Permit(Trigger.StoppedShooting, idleAimingState);
 
             stateMachine
@@ -137,6 +146,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
                 .OnEntry(() => runningState.Entry())
                 .OnExit(() => runningState.Exit())
                 .Permit(Trigger.StoppedRunning, walkingState)
+                .Permit(Trigger.StoppedWalking, idleState)
                 .Permit(Trigger.StartedAiming, strafingState)
                 .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
                 .Permit(Trigger.StartedCrouching, crouchWalkingState)
@@ -183,8 +193,12 @@ namespace com.Arnab.ZombieAppocalypseShooter
                 .OnExit(() => dyingState.Exit())
                 .Permit(Trigger.StoppedDying, idleState);
 
-            stateMachine.OnTransitioned((t) => previousState = t.Source);
-            stateMachine.OnUnhandledTrigger((state, trigger) => Debug.Log($"Cant Perform Trigger : {state} from {trigger}"));
+            stateMachine.OnTransitioned((t) => {
+                previousState = t.Source;
+                //Debug.Log(t.Source + "->" + t.Destination);
+                });
+            stateMachine.OnUnhandledTrigger((state, trigger) => Debug.Log($"Cant Perform Trigger : {trigger} from {state}"));
+            
         }
     }
 }
