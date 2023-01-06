@@ -16,6 +16,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
     }
     public class GameManager : MonoBehaviour
     {
+        //hello world bye
         private static GameManager _Instance;
         public static GameManager Instance
         {
