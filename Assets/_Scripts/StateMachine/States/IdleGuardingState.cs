@@ -6,18 +6,18 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class IdleGuardingState : IdleState
     {
-        public IdleGuardingState(PlayerStateMachine playerSM) : base(playerSM)
+        public IdleGuardingState(PlayerStateMachine playerSm) : base(playerSm)
         {
             
         }
         public override void Entry()
         {
             base.Entry();
-            playerController.animator.SetBool("isGuarding", true);
+            PlayerController.animator.SetBool("isGuarding", true);
         }
         public override void UpdateLogic()
         {
-            playerController.ApplyGravity();
+            PlayerController.ApplyGravity();
             if (InputManager.isAiming)
             {
                 PlayerAimed();
@@ -29,7 +29,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void Exit()
         {
-            playerController.animator.SetBool("isGuarding", false);
+            PlayerController.animator.SetBool("isGuarding", false);
             base.Exit();
         }
     } 

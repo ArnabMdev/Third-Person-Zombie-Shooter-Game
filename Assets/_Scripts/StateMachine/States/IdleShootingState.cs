@@ -6,24 +6,24 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class IdleShootingState : IdleState
     {
-        public IdleShootingState(PlayerStateMachine playerSM) : base(playerSM)
+        public IdleShootingState(PlayerStateMachine playerSm) : base(playerSm)
         {
 
         }
         public override void Entry()
         {
-            playerController.animator.SetBool("isIdle", true);
-            playerController.animator.SetBool("isAiming", true);
-            switch (playerController.gunMode)
+            PlayerController.animator.SetBool("isIdle", true);
+            PlayerController.animator.SetBool("isAiming", true);
+            switch (PlayerController.gunMode)
             {
                 case GunMode.Single:
-                    playerController.animator.SetInteger("isShootingBullets", 1);
+                    PlayerController.animator.SetInteger("isShootingBullets", 1);
                     break;
                 case GunMode.Burst:
-                    playerController.animator.SetInteger("isShootingBullets", 2);
+                    PlayerController.animator.SetInteger("isShootingBullets", 2);
                     break;
                 case GunMode.Auto:
-                    playerController.animator.SetInteger("isShootingBullets", 3);
+                    PlayerController.animator.SetInteger("isShootingBullets", 3);
                     break;
                 default:
                     break;
@@ -39,12 +39,12 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void Exit()
         {
-            playerController.animator.SetInteger("isShootingBullets", 0);
+            PlayerController.animator.SetInteger("isShootingBullets", 0);
         }
 
         private void PlayerStoppedShooting()
         {
-            playerSM.stateMachine.Fire(Trigger.StoppedShooting);
+            PlayerSm.StateMachine.Fire(Trigger.StoppedShooting);
         }
     } 
 }

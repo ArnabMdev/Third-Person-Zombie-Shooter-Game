@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Stateless;
 using Stateless.Graph;
+using UnityEngine.Serialization;
+
+// ReSharper disable CompareOfFloatsByEqualityOperator
 
 
 namespace com.Arnab.ZombieAppocalypseShooter
@@ -41,10 +44,10 @@ namespace com.Arnab.ZombieAppocalypseShooter
         [SerializeField] private bool isFlying;
         [SerializeField] private float turnSmoothTime = 0.1f;
         [SerializeField] float turningValueOffset;
-        public bool isGrounded => characterController.isGrounded;
+        [FormerlySerializedAs("IsGrounded")] public bool isGrounded;
         [HideInInspector] public Animator animator;
-        private float turnSmoothVelocity;
-        private Vector3 movementVector;
+        private float _turnSmoothVelocity;
+        private Vector3 _movementVector;
 
 
         [Header("Gun Properties")]
@@ -58,11 +61,12 @@ namespace com.Arnab.ZombieAppocalypseShooter
         [SerializeField] private bool canFly;
         [SerializeField] private float propulsionSpeed;
         [SerializeField] private float pitchPower, yawPower, rollPower;
-        private float activePitch, activeYaw, activeRoll;
-        private Vector3 moveVector;
+        private float _activePitch, _activeYaw, _activeRoll;
+        private Vector3 _moveVector;
 
-        private PlayerStateMachine playerSM;
-        private CharacterController characterController;
+        private PlayerStateMachine _playerSm;
+        private CharacterController _characterController;
+        private static readonly int IsStrafingInDirection = Animator.StringToHash("isStrafingInDirection");
 
         #endregion
 
@@ -81,24 +85,34 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         private void Awake()
         {
-            playerSM = new PlayerStateMachine(this);
-            playerSM.InitializeStates();
-            playerSM.InitializeStateMachine();
+            _playerSm = new PlayerStateMachine(this);
+            _playerSm.InitializeStates();
+            _playerSm.InitializeStateMachine();
         }
         void Start()
         {
-            characterController = GetComponent<CharacterController>();
+            _characterController = GetComponent<CharacterController>();
             animator = GetComponent<Animator>();
-            moveVector = Vector3.zero;
-            movementVector = Vector3.zero;
-            playerSM.stateMachine.Fire(Trigger.StartedGame);
+            _moveVector = Vector3.zero;
+            _movementVector = Vector3.zero;
+            _playerSm.StateMachine.Fire(Trigger.StartedGame);
             //playerSM.stateMachine.State.Entry();
 
         }
 
+        private void OnGUI()
+        {
+            if (Application.isEditor)
+            {
+                var stateLog = GUI.TextArea(new Rect(10, 10, 1000, 100),
+                    _playerSm.StateMachine.State.ToString());
+            }
+        }
+
         private void FixedUpdate()
         {
-            playerSM.stateMachine.State.UpdateLogic();
+            _playerSm.StateMachine.State.UpdateLogic();
+            isGrounded = _characterController.isGrounded;
 
         }
         #endregion
@@ -107,8 +121,8 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         public void PerformJump()
         {
-            movementVector.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
-            characterController.Move(movementVector * Time.fixedDeltaTime);
+            _movementVector.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+            _characterController.Move(_movementVector * Time.fixedDeltaTime);
         }
 
         public void StrafePlayer(Vector2 moveDir)
@@ -116,36 +130,36 @@ namespace com.Arnab.ZombieAppocalypseShooter
             var strafeVector = Vector3.zero;
             if(moveDir.x == 1)
             {
-                animator.SetInteger("isStrafingInDirection", 2);
+                animator.SetInteger(IsStrafingInDirection, 2);
                 strafeVector = transform.right * strafeSpeed;
             }
             else if(moveDir.x == -1)
             {
-                animator.SetInteger("isStrafingInDirection", 3);
+                animator.SetInteger(IsStrafingInDirection, 3);
                 strafeVector = -1 * transform.right * strafeSpeed;
             }
             else if(moveDir.y == 1)
             {
-                animator.SetInteger("isStrafingInDirection", 1);
+                animator.SetInteger(IsStrafingInDirection, 1);
                 strafeVector = transform.forward * strafeSpeed;
             }
             else if(moveDir.y == -1)
             {
-                animator.SetInteger("isStrafingInDirection", 4);
+                animator.SetInteger(IsStrafingInDirection, 4);
                 strafeVector = -1 * transform.forward * strafeSpeed;
             }
-            Debug.Log(strafeVector);
-            characterController.Move(strafeVector);
+            // Debug.Log(strafeVector);
+            _characterController.Move(strafeVector);
         }
 
         public void MovePlayer(Vector2 moveDir, int speedMultiplier)
         {
             TurnPlayer(moveDir);
-            float _walkTrigger = Mathf.Sqrt(Mathf.Pow(moveDir.x, 2) + Mathf.Pow(moveDir.y, 2));
-            if (_walkTrigger > turningValueOffset)
+            float walkTrigger = Mathf.Sqrt(Mathf.Pow(moveDir.x, 2) + Mathf.Pow(moveDir.y, 2));
+            if (walkTrigger > turningValueOffset)
             {
-                movementVector = new Vector3(moveVector.x * moveSpeed * Time.fixedDeltaTime, 0, moveVector.z * moveSpeed * Time.fixedDeltaTime);
-                characterController.Move(movementVector * speedMultiplier * Time.fixedDeltaTime); 
+                _movementVector = new Vector3(_moveVector.x * moveSpeed * Time.fixedDeltaTime, 0, _moveVector.z * moveSpeed * Time.fixedDeltaTime);
+                _characterController.Move(_movementVector * speedMultiplier * Time.fixedDeltaTime); 
 
             }
 
@@ -157,9 +171,9 @@ namespace com.Arnab.ZombieAppocalypseShooter
             if (inputVector.magnitude >= 0.1f)
             {
                 float targetAngle = MathF.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
-                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, turnSmoothTime);
                 transform.rotation = Quaternion.Euler(0f, angle, 0f);
-                moveVector = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+                _moveVector = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
             }
         }
 
@@ -167,25 +181,25 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         private void ControlFlight()
         {
-            characterController.Move(transform.up * propulsionSpeed);
-            transform.Rotate(activePitch * pitchPower * Time.fixedDeltaTime, -activeRoll * Time.fixedDeltaTime, -activeYaw * yawPower * Time.fixedDeltaTime, Space.Self);
+            _characterController.Move(transform.up * propulsionSpeed);
+            transform.Rotate(_activePitch * pitchPower * Time.fixedDeltaTime, -_activeRoll * Time.fixedDeltaTime, -_activeYaw * yawPower * Time.fixedDeltaTime, Space.Self);
         }
 
         public void ApplyGravity()
         {
-            if(characterController.isGrounded)
+            if(_characterController.isGrounded)
             {
                 return;
             } 
-            movementVector.y += gravityValue * Time.fixedDeltaTime;
-            characterController.Move(movementVector * Time.fixedDeltaTime);
+            _movementVector.y += gravityValue * Time.fixedDeltaTime;
+            _characterController.Move(_movementVector * Time.fixedDeltaTime);
         }
 
         public void ResetGravity()
         {
-            if(movementVector.y < 0)
+            if(_movementVector.y < 0)
             {
-                movementVector.y = -3f;
+                _movementVector.y = -3f;
             }
         }
 

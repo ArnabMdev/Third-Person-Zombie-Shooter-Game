@@ -6,20 +6,24 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class WalkingState : IState
     {
-        protected PlayerStateMachine playerSM;
-        protected PlayerController1 playerController;
-        public WalkingState(PlayerStateMachine playerSM)
+        protected PlayerStateMachine PlayerSm;
+        protected PlayerController1 PlayerController;
+        private static readonly int IsWalking = Animator.StringToHash("isWalking");
+
+        public WalkingState(PlayerStateMachine playerSm)
         {
-            this.playerSM = playerSM;
-            this.playerController = playerSM.playerController;
+            this.PlayerSm = playerSm;
+            this.PlayerController = playerSm.PlayerController;
         }
         public virtual void Entry()
         {
-            playerController.animator.SetBool("isWalking", true);
+            Debug.Log("Walk start");
+            PlayerController.animator.SetBool(IsWalking, true);
             InputManager.jumpPressed += PlayerJumped;
             InputManager.crouchPressed += PlayerCrouched;
             InputManager.reloadPressed += PlayerReloaded;
         }
+        // ReSharper disable Unity.PerformanceAnalysis
         public virtual void UpdateLogic()
         {
             if (InputManager.isAiming)
@@ -34,12 +38,12 @@ namespace com.Arnab.ZombieAppocalypseShooter
             {
                 PlayerStoppedMoving();
             }
-            playerController.ApplyGravity();
-            playerController.MovePlayer(InputManager.moveDir, 1);
+            // PlayerController.ApplyGravity();
+            PlayerController.MovePlayer(InputManager.moveDir, 1);
         }
         public virtual void Exit()
         {
-            playerController.animator.SetBool("isWalking", false);
+            PlayerController.animator.SetBool(IsWalking, false);
             InputManager.jumpPressed -= PlayerJumped;
             InputManager.crouchPressed -= PlayerCrouched;
             InputManager.reloadPressed -= PlayerReloaded;
@@ -47,32 +51,32 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         protected void PlayerStoppedMoving()
         {
-            playerSM.stateMachine.Fire(Trigger.StoppedWalking);
+            PlayerSm.StateMachine.Fire(Trigger.StoppedWalking);
         }
 
         protected void PlayerCrouched()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedCrouching);
+            PlayerSm.StateMachine.Fire(Trigger.StartedCrouching);
         }
 
         protected void PlayerJumped()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedJumping);
+            PlayerSm.StateMachine.Fire(Trigger.StartedJumping);
         }
 
         protected void PlayerStartedRunning()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedRunning);
+            PlayerSm.StateMachine.Fire(Trigger.StartedRunning);
         }
 
         protected void PlayerStartedAiming()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedAiming);
+            PlayerSm.StateMachine.Fire(Trigger.StartedAiming);
         }
 
         protected void PlayerReloaded()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedReloading);
+            PlayerSm.StateMachine.Fire(Trigger.StartedReloading);
         }
     } 
 }

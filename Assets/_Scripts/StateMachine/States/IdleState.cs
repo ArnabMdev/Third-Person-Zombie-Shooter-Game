@@ -2,31 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+// ReSharper disable CheckNamespace
+// ReSharper disable IdentifierTypo
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class IdleState : IState
     {
-        protected PlayerStateMachine playerSM;
-        protected PlayerController1 playerController;
-        private float idleTime = 0;
+        protected readonly PlayerStateMachine PlayerSm;
+        protected readonly PlayerController1 PlayerController;
+        private float _idleTime = 0;
+        private static readonly int IsIdle = Animator.StringToHash("isIdle");
 
-        public IdleState(PlayerStateMachine playerSM)
+        public IdleState(PlayerStateMachine playerSm)
         {
-            this.playerSM = playerSM;
-            this.playerController = playerSM.playerController;
+            this.PlayerSm = playerSm;
+            this.PlayerController = playerSm.PlayerController;
         }
         public virtual void Entry()
         {
-            Debug.Log("This Happened");
-            playerController.animator.SetBool("isIdle", true);
+            // Debug.Log("This Happened");
+            PlayerController.animator.SetBool(IsIdle, true);
             InputManager.jumpPressed += PlayerJumped;
             InputManager.crouchPressed += PlayerCrouched;
             InputManager.reloadPressed += PlayerReloaded;
         }
         public virtual void UpdateLogic()
         {
-            playerController.ApplyGravity();
+            PlayerController.ApplyGravity();
             CheckGuarding();
             if(InputManager.isAiming)
             {
@@ -40,10 +44,10 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         private void CheckGuarding()
         {
-            idleTime += Time.fixedDeltaTime;
-            if (idleTime > 10f)
+            _idleTime += Time.fixedDeltaTime;
+            if (_idleTime > 10f)
             {
-                idleTime = 0;
+                _idleTime = 0;
                 PlayerGuarded();
             }
         }
@@ -53,42 +57,42 @@ namespace com.Arnab.ZombieAppocalypseShooter
             InputManager.jumpPressed -= PlayerJumped;
             InputManager.crouchPressed -= PlayerCrouched;
             InputManager.reloadPressed -= PlayerReloaded;
-            playerController.animator.SetBool("isIdle", false);
+            PlayerController.animator.SetBool("isIdle", false);
 
         }
 
         protected void PlayerMoved()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedWalking);
+            PlayerSm.StateMachine.Fire(Trigger.StartedWalking);
         }
 
         protected void PlayerJumped()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedJumping);
+            PlayerSm.StateMachine.Fire(Trigger.StartedJumping);
         }
 
         protected void PlayerCrouched()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedCrouching);
+            PlayerSm.StateMachine.Fire(Trigger.StartedCrouching);
         }
 
         protected void PlayerAimed()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedAiming);
+            PlayerSm.StateMachine.Fire(Trigger.StartedAiming);
         }
         protected void PlayerReloaded()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedReloading);
+            PlayerSm.StateMachine.Fire(Trigger.StartedReloading);
         }
 
         protected void PlayerGuarded()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedGuarding);
+            PlayerSm.StateMachine.Fire(Trigger.StartedGuarding);
         }
 
         protected void PlayerDied()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedDying);
+            PlayerSm.StateMachine.Fire(Trigger.StartedDying);
         }
 
     } 

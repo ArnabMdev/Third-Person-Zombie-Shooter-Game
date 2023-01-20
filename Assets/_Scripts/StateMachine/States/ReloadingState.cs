@@ -6,16 +6,16 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class ReloadingState : IState
     {
-        protected PlayerStateMachine playerSM;
-        protected PlayerController1 playerController;
-        public ReloadingState(PlayerStateMachine playerSM)
+        protected PlayerStateMachine PlayerSm;
+        protected PlayerController1 PlayerController;
+        public ReloadingState(PlayerStateMachine playerSm)
         {
-            this.playerSM = playerSM;
-            this.playerController = playerSM.playerController;
+            this.PlayerSm = playerSm;
+            this.PlayerController = playerSm.PlayerController;
         }
         public void Entry()
         {
-            playerController.animator.SetTrigger("Reload");
+            PlayerController.animator.SetTrigger("Reload");
         }
         public void UpdateLogic()
         {

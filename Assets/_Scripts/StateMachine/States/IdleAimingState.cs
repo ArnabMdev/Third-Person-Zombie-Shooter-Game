@@ -6,14 +6,14 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class IdleAimingState : IdleState
     {
-        public IdleAimingState(PlayerStateMachine playerSM) : base(playerSM)
+        public IdleAimingState(PlayerStateMachine playerSm) : base(playerSm)
         {
 
         }
         public override void Entry()
         {
             base.Entry();
-            playerController.animator.SetBool("isAiming", true);
+            PlayerController.animator.SetBool("isAiming", true);
         }
         public override void UpdateLogic()
         {
@@ -32,18 +32,18 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void Exit()
         {
-            playerController.animator.SetBool("isAiming", false);
+            PlayerController.animator.SetBool("isAiming", false);
             base.Exit();
         }
 
         protected void PlayerStoppedAiming()
         {
-            playerSM.stateMachine.Fire(Trigger.StoppedAiming);
+            PlayerSm.StateMachine.Fire(Trigger.StoppedAiming);
         }
 
         protected void PlayerShoot()
         {
-            playerSM.stateMachine.Fire(Trigger.StartedShooting);
+            PlayerSm.StateMachine.Fire(Trigger.StartedShooting);
         }
     } 
 }

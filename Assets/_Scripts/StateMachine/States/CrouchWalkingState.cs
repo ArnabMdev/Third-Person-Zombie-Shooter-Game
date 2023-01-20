@@ -6,7 +6,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
 	public class CrouchWalkingState : CrouchingState
 	{
-        public CrouchWalkingState(PlayerStateMachine playerSM) : base(playerSM)
+        public CrouchWalkingState(PlayerStateMachine playerSm) : base(playerSm)
         {
 
         }

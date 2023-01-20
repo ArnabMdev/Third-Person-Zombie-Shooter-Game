@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33000012396361568}
   - component: {fileID: 23000014022947336}
   - component: {fileID: 65000012557956720}
+  - component: {fileID: 2113346571598006926}
   m_Layer: 0
   m_Name: Hangar_v6_2
   m_TagString: Untagged
@@ -97,3 +98,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 37.533947, y: 10.666195, z: 14.710602}
   m_Center: {x: -1.0107346, y: 5.333601, z: 0.97431946}
+--- !u!208 &2113346571598006926
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010559118178}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 18.767, y: 5.333, z: 7.3550005}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -1.011, y: 5.334, z: 0.97400004}
+  m_TimeToStationary: 0.5

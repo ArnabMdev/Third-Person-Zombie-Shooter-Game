@@ -31,173 +31,173 @@ namespace com.Arnab.ZombieAppocalypseShooter
     }
     public class PlayerStateMachine : IStateMachine
     {
-        public StateMachine<IState, Trigger> stateMachine;
-        public PlayerController1 playerController;
-        private IState previousState;
-        private IdleState initialState, idleState, idleGuardingState, idleAimingState, idleShootingState;
-        private WalkingState walkingState, strafingState, runningState;
-        private CrouchingState crouchingState, crouchWalkingState;
-        private JumpingState jumpingState;
-        private ReloadingState reloadingState;
-        private DyingState dyingState;
+        public StateMachine<IState, Trigger> StateMachine;
+        public readonly PlayerController1 PlayerController;
+        private IState _previousState;
+        private IdleState _initialState, _idleState, _idleGuardingState, _idleAimingState, _idleShootingState;
+        private WalkingState _walkingState, _runningState;
+        private StrafingState _strafingState;
+        private CrouchingState _crouchingState, _crouchWalkingState;
+        private JumpingState _jumpingState;
+        private ReloadingState _reloadingState;
+        private DyingState _dyingState;
 
         public PlayerStateMachine(PlayerController1 playerController)
         {
-            this.playerController = playerController;
+            this.PlayerController = playerController;
         }
         public void InitializeStates()
         {
-            initialState = new IdleState(this);
-            idleState = new IdleState(this);
-            idleGuardingState = new IdleGuardingState(this);
-            idleAimingState = new IdleAimingState(this);
-            idleShootingState = new IdleShootingState(this);
-            walkingState = new WalkingState(this);
-            strafingState = new StrafingState(this);
-            runningState = new RunningState(this);
-            crouchingState = new CrouchingState(this);
-            crouchWalkingState = new CrouchWalkingState(this);
-            jumpingState = new JumpingState(this);
-            reloadingState = new ReloadingState(this);
-            dyingState = new DyingState(this);
+            _initialState = new IdleState(this);
+            _idleState = new IdleState(this);
+            _idleGuardingState = new IdleGuardingState(this);
+            _idleAimingState = new IdleAimingState(this);
+            _idleShootingState = new IdleShootingState(this);
+            _walkingState = new WalkingState(this);
+            _strafingState = new StrafingState(this);
+            _runningState = new RunningState(this);
+            _crouchingState = new CrouchingState(this);
+            _crouchWalkingState = new CrouchWalkingState(this);
+            _jumpingState = new JumpingState(this);
+            _reloadingState = new ReloadingState(this);
+            _dyingState = new DyingState(this);
         }
         public void InitializeStateMachine()
         {
-            stateMachine = new StateMachine<IState, Trigger>(initialState);
+            StateMachine = new StateMachine<IState, Trigger>(_initialState);
 
-            stateMachine
-                .Configure(initialState)
-                .Permit(Trigger.StartedGame, idleState);
+            StateMachine
+                .Configure(_initialState)
+                .Permit(Trigger.StartedGame, _idleState);
 
-            stateMachine
-                .Configure(idleState)
-                .OnEntry(() => idleState.Entry())
-                .OnExit(() => idleState.Exit())
-                .Permit(Trigger.StartedGuarding, idleGuardingState)
-                .Permit(Trigger.StartedAiming, idleAimingState)
-                .Permit(Trigger.StartedWalking, walkingState)
-                .Permit(Trigger.StartedRunning, runningState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
-                .Permit(Trigger.StartedCrouching, crouchingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_idleState)
+                .OnEntry(() => _idleState.Entry())
+                .OnExit(() => _idleState.Exit())
+                .Permit(Trigger.StartedGuarding, _idleGuardingState)
+                .Permit(Trigger.StartedAiming, _idleAimingState)
+                .Permit(Trigger.StartedWalking, _walkingState)
+                .Permit(Trigger.StartedRunning, _runningState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .PermitIf(Trigger.StartedJumping, _jumpingState, () => PlayerController.isGrounded)
+                .Permit(Trigger.StartedCrouching, _crouchingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(idleGuardingState)
-                .OnEntry(() => idleGuardingState.Entry())
-                .OnExit(() => idleGuardingState.Exit())
-                .SubstateOf(idleState)
-                .Permit(Trigger.StartedGuarding, idleState)
-                .Permit(Trigger.StartedRunning, runningState)
-                .Permit(Trigger.StartedAiming, idleAimingState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .Permit(Trigger.StartedWalking, walkingState)
-                .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
-                .Permit(Trigger.StartedCrouching, crouchingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_idleGuardingState)
+                .OnEntry(() => _idleGuardingState.Entry())
+                .OnExit(() => _idleGuardingState.Exit())
+                // .SubstateOf(_idleState)
+                .Permit(Trigger.StartedGuarding, _idleState)
+                .Permit(Trigger.StartedRunning, _runningState)
+                .Permit(Trigger.StartedAiming, _idleAimingState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .Permit(Trigger.StartedWalking, _walkingState)
+                .PermitIf(Trigger.StartedJumping, _jumpingState, () => PlayerController.isGrounded)
+                .Permit(Trigger.StartedCrouching, _crouchingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(idleAimingState)
-                .OnEntry(() => idleAimingState.Entry())
-                .OnExit(() => idleAimingState.Exit())
-                .SubstateOf(idleState)
-                .Permit(Trigger.StoppedAiming, idleState)
-                .Permit(Trigger.StartedShooting, idleShootingState)
-                .Permit(Trigger.StartedWalking, strafingState)
-                .Permit(Trigger.StartedRunning, runningState)
-                .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
-                .Permit(Trigger.StartedCrouching, crouchingState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_idleAimingState)
+                .OnEntry(() => _idleAimingState.Entry())
+                .OnExit(() => _idleAimingState.Exit())
+                // .SubstateOf(_idleState)
+                .Permit(Trigger.StoppedAiming, _idleState)
+                .Permit(Trigger.StartedShooting, _idleShootingState)
+                .Permit(Trigger.StartedWalking, _strafingState)
+                .Permit(Trigger.StartedRunning, _runningState)
+                .PermitIf(Trigger.StartedJumping, _jumpingState, () => PlayerController.isGrounded)
+                .Permit(Trigger.StartedCrouching, _crouchingState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(idleShootingState)
-                .OnEntry(() => idleShootingState.Entry())
-                .OnExit(() => idleShootingState.Exit())
-                .SubstateOf(idleState)
-                .Permit(Trigger.StoppedShooting, idleAimingState);
+            StateMachine
+                .Configure(_idleShootingState)
+                .OnEntry(() => _idleShootingState.Entry())
+                .OnExit(() => _idleShootingState.Exit())
+                // .SubstateOf(_idleState)
+                .Permit(Trigger.StoppedShooting, _idleAimingState);
 
-            stateMachine
-                .Configure(walkingState)
-                .OnEntry(() => walkingState.Entry())
-                .OnExit(() => walkingState.Exit())
-                .Permit(Trigger.StoppedWalking, idleState)
-                .Permit(Trigger.StartedRunning, runningState)
-                .Permit(Trigger.StartedAiming, strafingState)
-                .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
-                .Permit(Trigger.StartedCrouching, crouchWalkingState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_walkingState)
+                .OnEntry(() => _walkingState.Entry())
+                .OnExit(() => _walkingState.Exit())
+                .Permit(Trigger.StoppedWalking, _idleState)
+                .Permit(Trigger.StartedRunning, _runningState)
+                .Permit(Trigger.StartedAiming, _strafingState)
+                .PermitIf(Trigger.StartedJumping, _jumpingState, () => PlayerController.isGrounded)
+                .Permit(Trigger.StartedCrouching, _crouchWalkingState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(strafingState)
-                .OnEntry(() => strafingState.Entry())
-                .OnExit(() => strafingState.Exit())
-                .SubstateOf(walkingState)
-                .Permit(Trigger.StoppedAiming, walkingState)
-                .Permit(Trigger.StoppedWalking, idleAimingState)
-                .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
-                .Permit(Trigger.StartedCrouching, crouchWalkingState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_strafingState)
+                .OnEntry(() => _strafingState.Entry())
+                .OnExit(() => _strafingState.Exit())
+                .Permit(Trigger.StoppedAiming, _walkingState)
+                .Permit(Trigger.StoppedWalking, _idleAimingState)
+                .PermitIf(Trigger.StartedJumping, _jumpingState, () => PlayerController.isGrounded)
+                .Permit(Trigger.StartedCrouching, _crouchWalkingState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(runningState)
-                .OnEntry(() => runningState.Entry())
-                .OnExit(() => runningState.Exit())
-                .Permit(Trigger.StoppedRunning, walkingState)
-                .Permit(Trigger.StoppedWalking, idleState)
-                .Permit(Trigger.StartedAiming, strafingState)
-                .PermitIf(Trigger.StartedJumping, jumpingState, () => playerController.isGrounded)
-                .Permit(Trigger.StartedCrouching, crouchWalkingState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_runningState)
+                .OnEntry(() => _runningState.Entry())
+                .OnExit(() => _runningState.Exit())
+                .Permit(Trigger.StoppedRunning, _walkingState)
+                .Permit(Trigger.StoppedWalking, _idleState)
+                .Permit(Trigger.StartedAiming, _strafingState)
+                .PermitIf(Trigger.StartedJumping, _jumpingState, () => PlayerController.isGrounded)
+                .Permit(Trigger.StartedCrouching, _crouchWalkingState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(crouchingState)
-                .OnEntry(() => crouchingState.Entry())
-                .OnExit(() => crouchingState.Exit())
-                .Permit(Trigger.StoppedCrouching, idleState)
-                .Permit(Trigger.StartedJumping, idleState)
-                .Permit(Trigger.StartedRunning, runningState)
-                .Permit(Trigger.StartedWalking, crouchWalkingState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_crouchingState)
+                .OnEntry(() => _crouchingState.Entry())
+                .OnExit(() => _crouchingState.Exit())
+                .Permit(Trigger.StoppedCrouching, _idleState)
+                .Permit(Trigger.StartedJumping, _idleState)
+                .Permit(Trigger.StartedRunning, _runningState)
+                .Permit(Trigger.StartedWalking, _crouchWalkingState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(crouchWalkingState)
-                .OnEntry(() => crouchWalkingState.Entry())
-                .OnExit(() => crouchWalkingState.Exit())
-                .SubstateOf(crouchingState)
-                .Permit(Trigger.StoppedWalking, crouchingState)
-                .Permit(Trigger.StartedJumping, walkingState)
-                .Permit(Trigger.StoppedCrouching, walkingState)
-                .Permit(Trigger.StartedReloading, reloadingState)
-                .Permit(Trigger.StartedDying, dyingState);
+            StateMachine
+                .Configure(_crouchWalkingState)
+                .OnEntry(() => _crouchWalkingState.Entry())
+                .OnExit(() => _crouchWalkingState.Exit())
+                .SubstateOf(_crouchingState)
+                .Permit(Trigger.StoppedWalking, _crouchingState)
+                .Permit(Trigger.StartedJumping, _walkingState)
+                .Permit(Trigger.StoppedCrouching, _walkingState)
+                .Permit(Trigger.StartedReloading, _reloadingState)
+                .Permit(Trigger.StartedDying, _dyingState);
 
-            stateMachine
-                .Configure(jumpingState)
-                .OnEntry(() => jumpingState.Entry())
-                .OnExit(() => jumpingState.Exit())
-                .PermitDynamic(Trigger.StoppedJumping, () => { return previousState; });
+            StateMachine
+                .Configure(_jumpingState)
+                .OnEntry(() => _jumpingState.Entry())
+                .OnExit(() => _jumpingState.Exit())
+                .PermitDynamic(Trigger.StoppedJumping, () => _previousState);
 
-            stateMachine
-                .Configure(reloadingState)
-                .OnEntry(() => reloadingState.Entry())
-                .OnExit(() => reloadingState.Exit())
-                .PermitDynamic(Trigger.StoppedReloading, () => { return previousState; });
+            StateMachine
+                .Configure(_reloadingState)
+                .OnEntry(() => _reloadingState.Entry())
+                .OnExit(() => _reloadingState.Exit())
+                .PermitDynamic(Trigger.StoppedReloading, () => _previousState);
 
-            stateMachine
-                .Configure(dyingState)
-                .OnEntry(() => dyingState.Entry())
-                .OnExit(() => dyingState.Exit())
-                .Permit(Trigger.StoppedDying, idleState);
+            StateMachine
+                .Configure(_dyingState)
+                .OnEntry(() => _dyingState.Entry())
+                .OnExit(() => _dyingState.Exit())
+                .Permit(Trigger.StoppedDying, _idleState);
 
-            stateMachine.OnTransitioned((t) => {
-                previousState = t.Source;
+            StateMachine.OnTransitioned((t) => {
+                _previousState = t.Source;
                 //Debug.Log(t.Source + "->" + t.Destination);
                 });
-            stateMachine.OnUnhandledTrigger((state, trigger) => Debug.Log($"Cant Perform Trigger : {trigger} from {state}"));
+            StateMachine.OnUnhandledTrigger((state, trigger) => Debug.Log($"Cant Perform Trigger : {trigger} from {state}"));
             
         }
     }

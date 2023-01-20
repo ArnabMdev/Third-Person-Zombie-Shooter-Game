@@ -31,7 +31,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             while (true)
             {
-                _progressBar.value = Mathf.Clamp01(GameManager.Instance._loadingOperation.progress / 0.9f);
+                _progressBar.value = Mathf.Clamp01(GameManager.Instance.LoadingOperation.progress / 0.9f);
                 yield return new WaitForEndOfFrame();
             }
             

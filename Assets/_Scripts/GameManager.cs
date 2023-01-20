@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+
+// ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 
 namespace com.Arnab.ZombieAppocalypseShooter
@@ -17,25 +21,26 @@ namespace com.Arnab.ZombieAppocalypseShooter
     public class GameManager : MonoBehaviour
     {
         //hello world bye
-        private static GameManager _Instance;
+        private static GameManager _instance;
         public static GameManager Instance
         {
             get
             {
-                if (!_Instance)
+                if (!_instance)
                 {
                     var prefab = Resources.Load<GameObject>("GameManager");
                     var inScene = Instantiate(prefab);
-                    _Instance = inScene.GetComponentInChildren<GameManager>();
-                    if (!_Instance) _Instance = inScene.AddComponent<GameManager>();
-                    DontDestroyOnLoad(_Instance.transform.root.gameObject);
+                    _instance = inScene.GetComponentInChildren<GameManager>();
+                    if (!_instance) _instance = inScene.AddComponent<GameManager>();
+                    DontDestroyOnLoad(_instance.transform.root.gameObject);
                 }
-                return _Instance;
+                return _instance;
             }
         }
 
-        [SerializeField] private GameObject _playerPrefab;
-        public AsyncOperation _loadingOperation;
+        [FormerlySerializedAs("_playerPrefab")] [SerializeField] private GameObject playerPrefab;
+        public AsyncOperation LoadingOperation;
+        public static event Action<Transform> PlayerActive; 
         public UIManager uiManager;
         private GameObject _player;
 
@@ -47,7 +52,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public void ChangeScene(int sceneIndex)
         {
-            _loadingOperation = SceneManager.LoadSceneAsync(sceneIndex);
+            LoadingOperation = SceneManager.LoadSceneAsync(sceneIndex);
             
         }
         public void SpawnPlayer(UnityEngine.SceneManagement.Scene scene, Vector3 position, Quaternion rotation)
@@ -56,8 +61,13 @@ namespace com.Arnab.ZombieAppocalypseShooter
             {
                 return;
             }
-            _player = Instantiate(_playerPrefab, position, rotation);
+            _player = Instantiate(playerPrefab, position, rotation);
+            OnPlayerActive(_player.transform);
         }
 
+        private static void OnPlayerActive(Transform obj)
+        {
+            PlayerActive?.Invoke(obj);
+        }
     } 
 }

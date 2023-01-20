@@ -6,29 +6,29 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class JumpingState : IState
     {
-        protected PlayerStateMachine playerSM;
-        protected PlayerController1 playerController;
-        public JumpingState(PlayerStateMachine playerSM)
+        protected PlayerStateMachine PlayerSm;
+        protected PlayerController1 PlayerController;
+        public JumpingState(PlayerStateMachine playerSm)
         {
-            this.playerSM = playerSM;
-            this.playerController = playerSM.playerController;
+            this.PlayerSm = playerSm;
+            this.PlayerController = playerSm.PlayerController;
         }
         public void Entry()
         {
-            playerController.animator.SetTrigger("Jump");
-            playerController.PerformJump();
+            PlayerController.animator.SetTrigger("Jump");
+            PlayerController.PerformJump();
         }
         public void UpdateLogic()
         {
-            playerController.ApplyGravity();
-            if(playerController.isGrounded)
+            PlayerController.ApplyGravity();
+            if(PlayerController.isGrounded)
             {
-                playerSM.stateMachine.Fire(Trigger.StoppedJumping);
+                PlayerSm.StateMachine.Fire(Trigger.StoppedJumping);
             }
         }
         public void Exit()
         {
-            playerController.ResetGravity();
+            PlayerController.ResetGravity();
         }
     } 
 }
