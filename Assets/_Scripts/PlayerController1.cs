@@ -49,16 +49,14 @@ namespace com.Arnab.ZombieAppocalypseShooter
         [SerializeField]private float fallTimeout = 0.15f;
         [SerializeField] private float gravityValue = -9.81f;
         [SerializeField] private bool isFlying;
-        [SerializeField] private float turnSmoothTime = 0.1f;
         [SerializeField] private GameObject cinemachineCameraTarget;
         [SerializeField] private float topClamp = 70.0f;
         [SerializeField] private float bottomClamp = -30.0f;
         [SerializeField] private float cameraAngleOverride = 0.0f;
         
-        public bool isGrounded;
         [HideInInspector] public Animator animator;
+        public bool isGrounded;
         private float _turnSmoothVelocity;
-        private Vector3 _movementVector;
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
         private float _speed;
@@ -107,7 +105,6 @@ namespace com.Arnab.ZombieAppocalypseShooter
             _characterController = GetComponent<CharacterController>();
             animator = GetComponent<Animator>();
             _moveVector = Vector3.zero;
-            _movementVector = Vector3.zero;
             _playerSm.StateMachine.Fire(Trigger.StartedGame);
             //playerSM.stateMachine.State.Entry();
 
@@ -123,6 +120,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         private void Update()
         {
             GroundedCheck();
+            JumpAndGravity(false);
             _playerSm.StateMachine.State.UpdateLogic();
         }
 
@@ -201,6 +199,10 @@ namespace com.Arnab.ZombieAppocalypseShooter
         public void MovePlayer(Vector2 moveDir, int speedMultiplier)
         {
             float targetSpeed = moveSpeed * speedMultiplier * 2;
+            if (!isGrounded)
+            {
+                targetSpeed /= 4.0f;
+            }
             if (moveDir == Vector2.zero) 
                 targetSpeed = 0.0f;
 
@@ -232,32 +234,19 @@ namespace com.Arnab.ZombieAppocalypseShooter
             }
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
             _characterController.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-
-            
         }
 
         private void CameraRotation()
         {
-            // if there is an input and camera position is not fixed
             if (InputManager.LookDir.sqrMagnitude >= _threshold )
             {
-                //Don't multiply mouse input by Time.deltaTime;
-                float deltaTimeMultiplier = 1.0f;
-
                 _cinemachineTargetYaw += InputManager.LookDir.x * yawSensitivity;
                 _cinemachineTargetPitch += InputManager.LookDir.y * pitchSensitivity;
-
                 _cinemachineTargetYaw *= invertYaw ? -1 : 1;
                 _cinemachineTargetPitch *= invertPitch ? -1 : 1;
-                
-
             }
-
-            // clamp our rotations so our values are limited 360 degrees
             _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, bottomClamp, topClamp);
-
-            // Cinemachine will follow this target
             cinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + cameraAngleOverride,_cinemachineTargetYaw, 0.0f);
         }
         
@@ -266,18 +255,6 @@ namespace com.Arnab.ZombieAppocalypseShooter
             if (lfAngle < -360f) lfAngle += 360f;
             if (lfAngle > 360f) lfAngle -= 360f;
             return Mathf.Clamp(lfAngle, lfMin, lfMax);
-        }
-
-        private void TurnPlayer(Vector2 inputVector)
-        {
-            Vector3 direction = new Vector3(inputVector.x, 0, inputVector.y); ;
-            if (inputVector.magnitude >= 0.1f)
-            {
-                float targetAngle = MathF.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
-                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, turnSmoothTime);
-                transform.rotation = Quaternion.Euler(0f, angle, 0f);
-                _moveVector = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
-            }
         }
         private void ControlFlight()
         {

@@ -26578,6 +26578,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 364340593489629299, guid: 2903d0020ac4a8e47a0be93e734d2888,
+        type: 3}
+      propertyPath: strafeSpeed
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 364340593489629299, guid: 2903d0020ac4a8e47a0be93e734d2888,
+        type: 3}
+      propertyPath: groundedOffset
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 364340593489629299, guid: 2903d0020ac4a8e47a0be93e734d2888,
+        type: 3}
+      propertyPath: yawSensitivity
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 364340593489629299, guid: 2903d0020ac4a8e47a0be93e734d2888,
+        type: 3}
+      propertyPath: pitchSensitivity
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 8643782831347129094, guid: 2903d0020ac4a8e47a0be93e734d2888,
         type: 3}
       propertyPath: m_RootOrder
@@ -32160,7 +32180,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4000010828360526, guid: d8185c26d9422ab41a0e3507aaab9abe, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.679472
+      value: 4.52
       objectReference: {fileID: 0}
     - target: {fileID: 4000010828360526, guid: d8185c26d9422ab41a0e3507aaab9abe, type: 3}
       propertyPath: m_LocalPosition.z
@@ -39929,7 +39949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1337485381
 Transform:
   m_ObjectHideFlags: 0

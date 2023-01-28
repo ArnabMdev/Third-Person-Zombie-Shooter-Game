@@ -29,7 +29,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
             {
                 base.PlayerStoppedMoving();
             }
-            PlayerController.MovePlayer(InputManager.MoveDir, 10);
+            PlayerController.MovePlayer(InputManager.MoveDir, 2);
         }
         public override void Exit()
         {

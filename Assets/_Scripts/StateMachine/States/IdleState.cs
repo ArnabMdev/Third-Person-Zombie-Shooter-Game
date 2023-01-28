@@ -28,9 +28,11 @@ namespace com.Arnab.ZombieAppocalypseShooter
             InputManager.CrouchPressed += PlayerCrouched;
             InputManager.ReloadPressed += PlayerReloaded;
         }
+        // ReSharper disable Unity.PerformanceAnalysis
         public virtual void UpdateLogic()
         {
             PlayerController.JumpAndGravity(false);
+            PlayerController.MovePlayer(Vector2.zero,0);
             CheckGuarding();
             if(InputManager.IsAiming)
             {
