@@ -17,12 +17,12 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void UpdateLogic()
         {
-            PlayerController.ApplyGravity();
-            if (InputManager.isAiming)
+            PlayerController.JumpAndGravity(false);
+            if (InputManager.IsAiming)
             {
                 PlayerAimed();
             }
-            if (InputManager.moveDir != Vector2.zero)
+            if (InputManager.MoveDir != Vector2.zero)
             {
                 PlayerMoved();
             }

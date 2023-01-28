@@ -641,7 +641,7 @@ GameObject:
   - component: {fileID: 1815788569}
   - component: {fileID: 1815788565}
   m_Layer: 0
-  m_Name: Cinemachine
+  m_Name: CinemachineFC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

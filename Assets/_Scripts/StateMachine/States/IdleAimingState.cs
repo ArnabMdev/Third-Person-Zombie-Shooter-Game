@@ -17,15 +17,15 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void UpdateLogic()
         {
-            if(!InputManager.isAiming)
+            if(!InputManager.IsAiming)
             {
                 PlayerStoppedAiming();
             }
-            if (InputManager.moveDir != Vector2.zero)
+            if (InputManager.MoveDir != Vector2.zero)
             {
                 PlayerMoved();
             }
-            if (InputManager.isShooting)
+            if (InputManager.IsShooting)
             {
                 PlayerShoot();
             }

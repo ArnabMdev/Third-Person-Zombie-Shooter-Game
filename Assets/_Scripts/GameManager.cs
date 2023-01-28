@@ -48,7 +48,8 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             SceneManager.sceneLoaded += (s, e) => SpawnPlayer(s, Vector3.zero, quaternion.identity);
             uiManager = FindObjectOfType<UIManager>();
-            Debug.Log("It works");
+            // Debug.Log("It works");
+            Cursor.visible = false;
         }
         public void ChangeScene(int sceneIndex)
         {

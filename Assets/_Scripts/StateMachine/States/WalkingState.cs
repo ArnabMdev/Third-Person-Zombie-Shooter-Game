@@ -17,36 +17,37 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public virtual void Entry()
         {
-            Debug.Log("Walk start");
+            // Debug.Log("Walk start");
             PlayerController.animator.SetBool(IsWalking, true);
-            InputManager.jumpPressed += PlayerJumped;
-            InputManager.crouchPressed += PlayerCrouched;
-            InputManager.reloadPressed += PlayerReloaded;
+            InputManager.JumpPressed += PlayerJumped;
+            InputManager.CrouchPressed += PlayerCrouched;
+            InputManager.ReloadPressed += PlayerReloaded;
         }
         // ReSharper disable Unity.PerformanceAnalysis
         public virtual void UpdateLogic()
         {
-            if (InputManager.isAiming)
+            if (InputManager.IsAiming)
             {
                 PlayerStartedAiming();
             }
-            if(InputManager.isRunning)
+            if(InputManager.IsRunning)
             {
                 PlayerStartedRunning();
             }
-            if(InputManager.moveDir == Vector2.zero)
+            if(InputManager.MoveDir == Vector2.zero)
             {
                 PlayerStoppedMoving();
             }
             // PlayerController.ApplyGravity();
-            PlayerController.MovePlayer(InputManager.moveDir, 1);
+            PlayerController.MovePlayer(InputManager.MoveDir, 1);
+            PlayerController.JumpAndGravity(false);
         }
         public virtual void Exit()
         {
             PlayerController.animator.SetBool(IsWalking, false);
-            InputManager.jumpPressed -= PlayerJumped;
-            InputManager.crouchPressed -= PlayerCrouched;
-            InputManager.reloadPressed -= PlayerReloaded;
+            InputManager.JumpPressed -= PlayerJumped;
+            InputManager.CrouchPressed -= PlayerCrouched;
+            InputManager.ReloadPressed -= PlayerReloaded;
         }
 
         protected void PlayerStoppedMoving()

@@ -16,11 +16,11 @@ namespace com.Arnab.ZombieAppocalypseShooter
         public void Entry()
         {
             PlayerController.animator.SetTrigger("Jump");
-            PlayerController.PerformJump();
+            PlayerController.JumpAndGravity(true);
         }
         public void UpdateLogic()
         {
-            PlayerController.ApplyGravity();
+            PlayerController.JumpAndGravity(false);
             if(PlayerController.isGrounded)
             {
                 PlayerSm.StateMachine.Fire(Trigger.StoppedJumping);
@@ -28,7 +28,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public void Exit()
         {
-            PlayerController.ResetGravity();
+            
         }
     } 
 }

@@ -6,32 +6,38 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class InputManager : MonoBehaviour
     {
-        public static Vector2 moveDir { get; private set; }
-        public static float pitch { get; private set; }
-        public static float yaw { get; private set; }
-        public static float roll { get; private set; }
-        public static bool isAiming { get; private set; }
-        public static bool isShooting { get; private set; }
-        public static bool isRunning { get; private set; }
-        public static event Action reloadPressed;
-        public static event Action pitchChanged;
-        public static event Action rollChanged;
-        public static event Action yawChanged;
-        public static event Action jumpPressed;
-        public static event Action crouchPressed;
-        public static event Action flyPressed;
+        public static Vector2 MoveDir { get; private set; }
+        public static Vector2 LookDir { get; private set; }
+        public static float Pitch { get; private set; }
+        public static float Yaw { get; private set; }
+        public static float Roll { get; private set; }
+        public static bool IsAiming { get; private set; }
+        public static bool IsShooting { get; private set; }
+        public static bool IsRunning { get; private set; }
+        public static event Action ReloadPressed;
+        public static event Action PitchChanged;
+        public static event Action RollChanged;
+        public static event Action YawChanged;
+        public static event Action JumpPressed;
+        public static event Action CrouchPressed;
+        public static event Action FlyPressed;
 
         public void Move(InputAction.CallbackContext context)
         {
-            moveDir = context.ReadValue<Vector2>();
+            MoveDir = context.ReadValue<Vector2>();
 
+        }
+
+        public void Look(InputAction.CallbackContext context)
+        {
+            LookDir = context.ReadValue<Vector2>();
         }
 
         public void Jump(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
-                jumpPressed?.Invoke();
+                JumpPressed?.Invoke();
             }
         }
 
@@ -39,7 +45,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                reloadPressed?.Invoke();
+                ReloadPressed?.Invoke();
             }
         }
 
@@ -47,11 +53,11 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                isRunning = true;
+                IsRunning = true;
             }
             if (context.canceled)
             {
-                isRunning = false;
+                IsRunning = false;
 
             }
 
@@ -61,7 +67,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                flyPressed?.Invoke();
+                FlyPressed?.Invoke();
             }
         }
 
@@ -69,7 +75,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                crouchPressed?.Invoke();
+                CrouchPressed?.Invoke();
             }
         }
 
@@ -77,11 +83,11 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                isAiming = true;
+                IsAiming = true;
             }
             if (context.canceled)
             {
-                isAiming = false;
+                IsAiming = false;
             }
         }
 
@@ -89,32 +95,32 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             if (context.performed)
             {
-                isShooting = true;
+                IsShooting = true;
             }
             if (context.canceled)
             {
-                isShooting = false;
+                IsShooting = false;
             }
         }
 
         public void ControlPitch(InputAction.CallbackContext context)
         {
-            pitch = context.ReadValue<float>();
+            Pitch = context.ReadValue<float>();
             if (context.performed)
-                pitchChanged?.Invoke();
+                PitchChanged?.Invoke();
         }
 
         public void ControlRoll(InputAction.CallbackContext context)
         {
-            roll = context.ReadValue<float>();
+            Roll = context.ReadValue<float>();
             if (context.performed)
-                rollChanged?.Invoke();
+                RollChanged?.Invoke();
         }
         public void ControlYaw(InputAction.CallbackContext context)
         {
-            yaw = context.ReadValue<float>();
+            Yaw = context.ReadValue<float>();
             if (context.performed)
-                yawChanged?.Invoke();
+                YawChanged?.Invoke();
         }
 
 

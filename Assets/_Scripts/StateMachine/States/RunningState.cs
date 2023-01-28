@@ -17,20 +17,19 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void UpdateLogic()
         {
-            if(InputManager.isAiming)
+            if(InputManager.IsAiming)
             {
                 base.PlayerStartedAiming();
             }
-            if(!InputManager.isRunning)
+            if(!InputManager.IsRunning)
             {
                 PlayerStoppedMoving();
             }
-            if(InputManager.moveDir == Vector2.zero)
+            if(InputManager.MoveDir == Vector2.zero)
             {
                 base.PlayerStoppedMoving();
             }
-            PlayerController.ApplyGravity();
-            PlayerController.MovePlayer(InputManager.moveDir, 2);
+            PlayerController.MovePlayer(InputManager.MoveDir, 10);
         }
         public override void Exit()
         {

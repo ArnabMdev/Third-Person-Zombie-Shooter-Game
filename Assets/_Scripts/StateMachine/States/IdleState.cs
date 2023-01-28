@@ -24,19 +24,19 @@ namespace com.Arnab.ZombieAppocalypseShooter
         {
             // Debug.Log("This Happened");
             PlayerController.animator.SetBool(IsIdle, true);
-            InputManager.jumpPressed += PlayerJumped;
-            InputManager.crouchPressed += PlayerCrouched;
-            InputManager.reloadPressed += PlayerReloaded;
+            InputManager.JumpPressed += PlayerJumped;
+            InputManager.CrouchPressed += PlayerCrouched;
+            InputManager.ReloadPressed += PlayerReloaded;
         }
         public virtual void UpdateLogic()
         {
-            PlayerController.ApplyGravity();
+            PlayerController.JumpAndGravity(false);
             CheckGuarding();
-            if(InputManager.isAiming)
+            if(InputManager.IsAiming)
             {
                 PlayerAimed();
             }
-            if(InputManager.moveDir != Vector2.zero)
+            if(InputManager.MoveDir != Vector2.zero)
             {
                 PlayerMoved();
             }
@@ -54,9 +54,9 @@ namespace com.Arnab.ZombieAppocalypseShooter
 
         public virtual void Exit()
         {
-            InputManager.jumpPressed -= PlayerJumped;
-            InputManager.crouchPressed -= PlayerCrouched;
-            InputManager.reloadPressed -= PlayerReloaded;
+            InputManager.JumpPressed -= PlayerJumped;
+            InputManager.CrouchPressed -= PlayerCrouched;
+            InputManager.ReloadPressed -= PlayerReloaded;
             PlayerController.animator.SetBool("isIdle", false);
 
         }

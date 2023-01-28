@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum playerState
+public enum PlayerState
 {
     Idle = 0,
     Walking = 1,
@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 {
 #region Properties
     [Header("Movement Properties")]
-    public playerState activeState;
+    public PlayerState activeState;
     [SerializeField] private float jumpForce;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float lookSpeed;
@@ -32,8 +32,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float checkRadius;
     [SerializeField] private float turnSmoothTime = 0.1f;
     [SerializeField] float turningValueOffset;
-    private float turnSmoothVelocity;
-    private Vector2 moveDir;
+    private float _turnSmoothVelocity;
+    private Vector2 _moveDir;
 
 
     [Header("Gun Properties")]
@@ -46,43 +46,43 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool canFly;
     [SerializeField] private float propulsionSpeed;
     [SerializeField] private float pitchPower, yawPower, rollPower;
-    private float activePitch, activeYaw, activeRoll;
-    private Vector3 moveVector;
-    private Rigidbody rbd;
+    private float _activePitch, _activeYaw, _activeRoll;
+    private Vector3 _moveVector;
+    private Rigidbody _rbd;
 
     #endregion
 
 #region UnityMethods
     void Start()
     {
-        rbd = GetComponent<Rigidbody>();
-        activeState = playerState.Idle;
-        moveVector = Vector3.zero;
+        _rbd = GetComponent<Rigidbody>();
+        activeState = PlayerState.Idle;
+        _moveVector = Vector3.zero;
     }
 
     private void FixedUpdate()
     {
         isGrounded = Physics.CheckSphere(checkSphereTarget.transform.position, checkRadius, groundMask);
-        if(activeState == playerState.Jumping && isGrounded)
+        if(activeState == PlayerState.Jumping && isGrounded)
         {
-            activeState = playerState.Walking;
+            activeState = PlayerState.Walking;
         }
         switch (activeState)
         {
-            case playerState.Idle:
-                TurnPlayer(moveDir);
+            case PlayerState.Idle:
+                TurnPlayer(_moveDir);
                 break;
-            case playerState.Walking:
-                TurnPlayer(moveDir);
+            case PlayerState.Walking:
+                TurnPlayer(_moveDir);
                 MovePlayer();
                 break;
-            case playerState.Sprinting:
-                TurnPlayer(moveDir);
+            case PlayerState.Sprinting:
+                TurnPlayer(_moveDir);
                 MovePlayer();
                 break;
-            case playerState.Jumping:
+            case PlayerState.Jumping:
                 break;
-            case playerState.Flying:
+            case PlayerState.Flying:
                 ControlFlight();
                 break;
             default:
@@ -95,18 +95,18 @@ public class PlayerController : MonoBehaviour
 #region InputCallBacks
     public void Move(InputAction.CallbackContext context)
     {
-        moveDir = context.ReadValue<Vector2>();
-        if(activeState == playerState.Jumping || activeState == playerState.Flying)
+        _moveDir = context.ReadValue<Vector2>();
+        if(activeState == PlayerState.Jumping || activeState == PlayerState.Flying)
         {
             return;
         }
         if (context.performed)
         {
-            activeState = playerState.Walking;
+            activeState = PlayerState.Walking;
         }
         if (context.canceled)
         {
-            activeState = playerState.Idle;
+            activeState = PlayerState.Idle;
         }
 
 
@@ -114,28 +114,28 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (activeState == playerState.Jumping || activeState == playerState.Flying)
+        if (activeState == PlayerState.Jumping || activeState == PlayerState.Flying)
         {
             return;
         }
-        activeState = playerState.Jumping;
+        activeState = PlayerState.Jumping;
         PerformJump();
         
 
     }
     public void Sprint(InputAction.CallbackContext context)
     {
-        if (activeState == playerState.Flying || activeState == playerState.Jumping)
+        if (activeState == PlayerState.Flying || activeState == PlayerState.Jumping)
         {
             return;
         }
         if(context.started)
         {
-            activeState = playerState.Sprinting;
+            activeState = PlayerState.Sprinting;
         }
         if(context.canceled)
         {
-            activeState = playerState.Walking;
+            activeState = PlayerState.Walking;
         }
     }
 
@@ -145,17 +145,17 @@ public class PlayerController : MonoBehaviour
             return;
         if (context.performed)
         {
-            if (activeState == playerState.Flying)
+            if (activeState == PlayerState.Flying)
             {
-                activeState = playerState.Walking;
-                rbd.useGravity = true;
-                rbd.velocity = Vector3.zero;
+                activeState = PlayerState.Walking;
+                _rbd.useGravity = true;
+                _rbd.velocity = Vector3.zero;
                 transform.Rotate(Vector3.right, -90);
             }
             else
             {
-                activeState = playerState.Flying;
-                rbd.useGravity = false;
+                activeState = PlayerState.Flying;
+                _rbd.useGravity = false;
                 transform.Rotate(Vector3.right, 90);
             }
         }
@@ -164,42 +164,42 @@ public class PlayerController : MonoBehaviour
 
     public void ControlPitch(InputAction.CallbackContext context)
     {
-        if (activeState != playerState.Flying)
+        if (activeState != PlayerState.Flying)
             return;
         Debug.Log("pitch");
-        activePitch = context.ReadValue<float>();
-        activePitch *= pitchPower;
+        _activePitch = context.ReadValue<float>();
+        _activePitch *= pitchPower;
     }
 
     public void ControlRoll(InputAction.CallbackContext context)
     {
-        if (activeState != playerState.Flying)
+        if (activeState != PlayerState.Flying)
             return;
-        activeRoll = context.ReadValue<float>();
-        activeRoll *= rollPower;
+        _activeRoll = context.ReadValue<float>();
+        _activeRoll *= rollPower;
     }
 
     public void ControlYaw(InputAction.CallbackContext context)
     {
-        if (activeState != playerState.Flying)
+        if (activeState != PlayerState.Flying)
             return;
-        activeYaw = context.ReadValue<float>();
-        activeYaw *= yawPower;
+        _activeYaw = context.ReadValue<float>();
+        _activeYaw *= yawPower;
     }
 
     public void Crouch(InputAction.CallbackContext context)
     {
-        if (activeState == playerState.Flying || activeState == playerState.Jumping)
+        if (activeState == PlayerState.Flying || activeState == PlayerState.Jumping)
         {
             return;
         }
         if (context.started)
         {
-            activeState = playerState.Crouching;
+            activeState = PlayerState.Crouching;
         }
         if (context.canceled)
         {
-            activeState = playerState.Crouching;
+            activeState = PlayerState.Crouching;
         }
     }
 
@@ -209,16 +209,16 @@ public class PlayerController : MonoBehaviour
     private void PerformJump()
     {
         if (isGrounded)
-            rbd.AddForce(Vector3.up * jumpForce);
+            _rbd.AddForce(Vector3.up * jumpForce);
 
     }
 
     private void MovePlayer()
     {
-        float _walkTrigger = Mathf.Sqrt(Mathf.Pow(moveDir.x, 2) + Mathf.Pow(moveDir.y, 2));
-        if (_walkTrigger > turningValueOffset)
+        float walkTrigger = Mathf.Sqrt(Mathf.Pow(_moveDir.x, 2) + Mathf.Pow(_moveDir.y, 2));
+        if (walkTrigger > turningValueOffset)
         {
-            rbd.velocity = new Vector3(moveVector.x * moveSpeed * Time.fixedDeltaTime, rbd.velocity.y, moveVector.z * moveSpeed * Time.fixedDeltaTime);
+            _rbd.velocity = new Vector3(_moveVector.x * moveSpeed * Time.fixedDeltaTime, _rbd.velocity.y, _moveVector.z * moveSpeed * Time.fixedDeltaTime);
 
         }
 
@@ -231,16 +231,16 @@ public class PlayerController : MonoBehaviour
         if (inputVector.magnitude >= 0.1f)
         {
             float targetAngle = MathF.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
-            moveVector = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+            _moveVector = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
         }
     }
 
     private void ControlFlight()
     {
-        rbd.velocity = transform.up * propulsionSpeed;
-        transform.Rotate(activePitch * pitchPower * Time.fixedDeltaTime, -activeRoll * Time.fixedDeltaTime, activeYaw * yawPower * Time.fixedDeltaTime, Space.Self);   
+        _rbd.velocity = transform.up * propulsionSpeed;
+        transform.Rotate(_activePitch * pitchPower * Time.fixedDeltaTime, -_activeRoll * Time.fixedDeltaTime, _activeYaw * yawPower * Time.fixedDeltaTime, Space.Self);   
     }
 
 #endregion

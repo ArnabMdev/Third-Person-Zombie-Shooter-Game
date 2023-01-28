@@ -32,7 +32,7 @@ namespace com.Arnab.ZombieAppocalypseShooter
         }
         public override void UpdateLogic()
         {
-            if(!InputManager.isShooting)
+            if(!InputManager.IsShooting)
             {
                 PlayerStoppedShooting();
             }

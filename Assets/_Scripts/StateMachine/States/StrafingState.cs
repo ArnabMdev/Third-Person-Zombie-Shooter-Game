@@ -6,78 +6,78 @@ namespace com.Arnab.ZombieAppocalypseShooter
 {
     public class StrafingState : IState
     {
-        private readonly PlayerStateMachine PlayerSm;
-        private readonly PlayerController1 PlayerController;
+        private readonly PlayerStateMachine _playerSm;
+        private readonly PlayerController1 _playerController;
         private static readonly int IsStrafingInDirection = Animator.StringToHash("isStrafingInDirection");
         private static readonly int IsWalking = Animator.StringToHash("isWalking");
         private static readonly int IsAiming = Animator.StringToHash("isAiming");
 
         public StrafingState(PlayerStateMachine playerSm)
         {
-            this.PlayerSm = playerSm;
-            this.PlayerController = playerSm.PlayerController;
+            this._playerSm = playerSm;
+            this._playerController = playerSm.PlayerController;
         }
         public void Entry()
         {
-            PlayerController.animator.SetBool(IsWalking, true);
-            PlayerController.animator.SetBool(IsAiming, true);
-            PlayerController.animator.SetInteger(IsStrafingInDirection, 1);
-            InputManager.jumpPressed += PlayerJumped;
-            InputManager.crouchPressed += PlayerCrouched;
-            InputManager.reloadPressed += PlayerReloaded;}
+            _playerController.animator.SetBool(IsWalking, true);
+            _playerController.animator.SetBool(IsAiming, true);
+            _playerController.animator.SetInteger(IsStrafingInDirection, 1);
+            InputManager.JumpPressed += PlayerJumped;
+            InputManager.CrouchPressed += PlayerCrouched;
+            InputManager.ReloadPressed += PlayerReloaded;}
         // ReSharper disable Unity.PerformanceAnalysis
         public void UpdateLogic()
         {
-            if(!InputManager.isAiming)
+            if(!InputManager.IsAiming)
             {
                 PlayerStoppedAiming();
             }
-            if(InputManager.isRunning)
+            if(InputManager.IsRunning)
             {
                 PlayerStartedRunning();
             }
-            if(InputManager.moveDir == Vector2.zero)
+            if(InputManager.MoveDir == Vector2.zero)
             {
                 PlayerStoppedMoving();
             }
-            PlayerController.ApplyGravity();
-            PlayerController.StrafePlayer(InputManager.moveDir);
+            _playerController.JumpAndGravity(false);
+            _playerController.StrafePlayer(InputManager.MoveDir);
         }
         public void Exit()
         {
-            PlayerController.animator.SetBool(IsAiming, false);
-            PlayerController.animator.SetInteger(IsStrafingInDirection, 0);
-            PlayerController.animator.SetBool(IsWalking, false);
+            _playerController.animator.SetBool(IsAiming, false);
+            _playerController.animator.SetInteger(IsStrafingInDirection, 0);
+            _playerController.animator.SetBool(IsWalking, false);
 
         }
 
         private void PlayerCrouched()
         {
-            PlayerSm.StateMachine.Fire(Trigger.StartedCrouching);
+            _playerSm.StateMachine.Fire(Trigger.StartedCrouching);
         }
         private void PlayerStoppedAiming()
         {
-            PlayerSm.StateMachine.Fire(Trigger.StoppedAiming);
+            _playerSm.StateMachine.Fire(Trigger.StoppedAiming);
         }
         
         private void PlayerStoppedMoving()
         {
-            PlayerSm.StateMachine.Fire(Trigger.StoppedWalking);
+            _playerSm.StateMachine.Fire(Trigger.StoppedWalking);
         }
 
         private void PlayerReloaded()
         {
-            PlayerSm.StateMachine.Fire(Trigger.StartedReloading);
+            _playerSm.StateMachine.Fire(Trigger.StartedReloading);
         }
 
         private void PlayerJumped()
         {
-            PlayerSm.StateMachine.Fire(Trigger.StartedJumping);
+            _playerSm.StateMachine.Fire(Trigger.StartedJumping);
         }
         
         protected void PlayerStartedRunning()
         {
-            PlayerSm.StateMachine.Fire(Trigger.StartedRunning);
+            _playerSm.StateMachine.Fire(Trigger.StartedRunning);
         }
     } 
 }
